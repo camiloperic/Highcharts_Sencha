@@ -209,6 +209,14 @@ Ext.define('Chart.ux.Highcharts.Serie', {
     },
 
     /***
+     * @private
+     * each entry contains the name and path for the mapped object paired with a y value 
+     */
+    map_getMapPair: function(record, index) {
+        return {name: record.data.name, path: record.data.path, y: record.data.y};
+    },
+
+    /***
      * @method getData
      * getData is the core mechanism for transferring from Store's record data into the series data array.
      * This routine acts as a Template Method for any series class, i.e. any new series type class must 
@@ -295,7 +303,9 @@ Ext.define('Chart.ux.Highcharts.Serie', {
                 this.getData = this.obj_getData;
             } else if (this.xField) {
                 this.getData = this.arr_getDataPair;
-            } else {
+            } else if (this.type && this.type == 'map') {
+		this.getData = this.map_getMapPair;
+	    } else {
                 this.getData = this.arr_getDataSingle;
             }
         }

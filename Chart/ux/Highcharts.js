@@ -541,9 +541,12 @@ Ext.define("Chart.ux.Highcharts", {
             renderTo : (this.statics().sencha.product == 't') ? this.element.dom : this.el.dom
         });
 
-        Ext.applyIf(_this.chartConfig, {
-            xAxis : [{}]
-        });
+	//Avoid displaying a x axis that is not needed
+	if (_this.chartConfig.chart.type != 'map') {
+	    Ext.applyIf(_this.chartConfig, {
+                xAxis : [{}]
+            });
+	}
 
         if(_this.xField && this.store) {
             this.updatexAxisData();
@@ -629,7 +632,13 @@ Ext.define("Chart.ux.Highcharts", {
             // Create the chart from fresh
             if (!this.initAnimAfterLoad || (this.store && this.store.getCount() > 0)) {
                 this.buildInitData();
-                this.chart = new Highcharts.Chart(_this.chartConfig, this.afterChartRendered);
+		//For the map chart type Highcharts.Map function is used
+		//Highcharts.Map function at http://github.highcharts.com/fe297f0/modules/map.src.js
+		if (_this.chartConfig.chart.type == 'map') {
+			this.chart = new Highcharts.Map(_this.chartConfig);
+		} else {
+			this.chart = new Highcharts.Chart(_this.chartConfig, this.afterChartRendered);
+		}
                 this.log("initAnimAfterLoad is off, creating chart from fresh");
             } else {
                 this.log("initAnimAfterLoad is on, defer creating chart");
